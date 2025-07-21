@@ -233,7 +233,7 @@ footer {
     }
     
     .mobile-menu-toggle {
-        display: block;
+        display: block !important;
         position: absolute;
         right: 1rem;
         top: 1.5rem;
@@ -258,6 +258,13 @@ footer {
     
     .mobile-menu-overlay.active {
         display: block;
+    }
+    
+    /* Garantir que o menu mobile seja exibido corretamente */
+    @media (max-width: 767px) {
+        header nav {
+            display: flex;
+        }
     }
     
     .card-title {
@@ -448,6 +455,23 @@ footer {
         width: auto;
     }
     
+    /* Ajuste para os bullets ficarem alinhados com o texto */
+    #sobre .flex .flex img {
+        margin-top: 3px;
+        align-self: flex-start;
+        flex-shrink: 0;
+    }
+    
+    #sobre .flex .flex p {
+        margin: 0;
+        display: block;
+        line-height: 1.3;
+    }
+    
+    #sobre .flex .flex {
+        align-items: flex-start;
+    }
+    
     .card {
         aspect-ratio: auto;
         padding: 1.5rem 1rem;
@@ -460,6 +484,7 @@ footer {
     
     .card-description {
         font-size: 14px;
+        text-align: left;
     }
     
     section {
