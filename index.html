@@ -86,7 +86,7 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <nav class="md:flex items-center gap-10 hidden">
+                <nav class="md:flex items-center gap-10 hidden mobile-nav">
                     <a href="#sobre" class="font-normal text-white text-sm hover:text-[#cdff3c] transition-colors duration-300 border-b-2 border-transparent hover:border-[#cdff3c]">Sobre nós</a>
                     <a href="#acreditamos" class="font-normal text-white text-sm hover:text-[#cdff3c] transition-colors duration-300 border-b-2 border-transparent hover:border-[#cdff3c]">No que acreditamos</a>
                     <a href="#como" class="font-normal text-white text-sm hover:text-[#cdff3c] transition-colors duration-300 border-b-2 border-transparent hover:border-[#cdff3c]">Como fazemos</a>
@@ -307,10 +307,11 @@
                                         <div class="partner-logo-container flex items-center justify-center h-16 mb-6">
                                             <img src="img/unobvious.png" alt="Unobvious" class="h-6 w-auto object-contain">
                                         </div>
-                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center">
-                                            Agência referência em<br>brand experience no Brasil
+                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center justify-center">
+                                            <span class="inline-block">Agência referência em</span><br>
+                                            <span class="inline-block">brand experience no Brasil</span>
                                         </h3>
-                                        <a href="http://www.unobvious.ag" target="_blank" class="text-sm hover:underline mt-auto">
+                                        <a href="http://www.unobvious.ag" target="_blank" class="text-sm hover:underline mt-auto text-center break-all sm:break-normal">
                                             www.unobvious.ag
                                         </a>
                                     </div>
@@ -322,10 +323,11 @@
                                         <div class="partner-logo-container flex items-center justify-center h-16 mb-6">
                                             <img src="img/premteco.png" alt="Premteco" class="h-12 w-auto object-contain">
                                         </div>
-                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center">
-                                            Renomado fabricante<br>de LED
+                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center justify-center">
+                                            <span class="inline-block">Renomado fabricante</span><br>
+                                            <span class="inline-block">de LED</span>
                                         </h3>
-                                        <a href="http://www.premteco.com" target="_blank" class="text-sm hover:underline mt-auto">
+                                        <a href="http://www.premteco.com" target="_blank" class="text-sm hover:underline mt-auto text-center break-all sm:break-normal">
                                             www.premteco.com
                                         </a>
                                     </div>
@@ -337,10 +339,11 @@
                                         <div class="partner-logo-container flex items-center justify-center h-16 mb-6">
                                             <img src="img/china.png" alt="Zhenxiang Technology" class="h-12 w-auto object-contain">
                                         </div>
-                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center">
-                                            Zhenxiang Technology, renomado<br>fabricante de soluções ópticas
+                                        <h3 class="text-white text-lg font-medium text-center mb-2 h-14 flex items-center justify-center">
+                                            <span class="inline-block">Zhenxiang Technology,</span><br>
+                                            <span class="inline-block">renomado fabricante de soluções ópticas</span>
                                         </h3>
-                                        <a href="http://www.imagetruth.com/english" target="_blank" class="text-sm hover:underline mt-auto">
+                                        <a href="http://www.imagetruth.com/english" target="_blank" class="text-sm hover:underline mt-auto text-center break-all sm:break-normal">
                                             www.imagetruth.com/english
                                         </a>
                                     </div>
@@ -423,6 +426,7 @@
             // Toggle menu when button is clicked
             mobileMenuToggle.addEventListener('click', function() {
                 nav.classList.toggle('active');
+                nav.classList.toggle('hidden');
                 mobileMenuOverlay.classList.toggle('active');
                 document.body.classList.toggle('overflow-hidden');
             });
@@ -430,6 +434,9 @@
             // Close menu when overlay is clicked
             mobileMenuOverlay.addEventListener('click', function() {
                 nav.classList.remove('active');
+                if (window.innerWidth < 768) {
+                    nav.classList.add('hidden');
+                }
                 mobileMenuOverlay.classList.remove('active');
                 document.body.classList.remove('overflow-hidden');
             });
@@ -439,6 +446,9 @@
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     nav.classList.remove('active');
+                    if (window.innerWidth < 768) {
+                        nav.classList.add('hidden');
+                    }
                     mobileMenuOverlay.classList.remove('active');
                     document.body.classList.remove('overflow-hidden');
                 });
@@ -448,6 +458,7 @@
             window.addEventListener('resize', function() {
                 if (window.innerWidth >= 768) {
                     nav.classList.remove('active');
+                    nav.classList.add('hidden');
                     mobileMenuOverlay.classList.remove('active');
                     document.body.classList.remove('overflow-hidden');
                 }
