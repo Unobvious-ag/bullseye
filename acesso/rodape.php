@@ -51,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Tentar executar a instrução preparada
             if ($stmt->execute()) {
                 $success_message = "Informações do rodapé atualizadas com sucesso!";
-                
-                // Atualizar o arquivo HTML
-                updateRodapeSection($email, $telefone);
+                // Salvar os valores para usar após fechar a conexão
+                $email_updated = $email;
+                $telefone_updated = $telefone;
             } else {
                 echo "Ops! Algo deu errado. Por favor, tente novamente mais tarde.";
             }
@@ -65,6 +65,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Fechar conexão
     $mysqli->close();
+    
+    // Atualizar o arquivo HTML após fechar a conexão
+    if (!empty($success_message) && isset($email_updated) && isset($telefone_updated)) {
+        updateRodapeSection($email_updated, $telefone_updated);
+    }
     
     // Redirecionar para evitar reenvio do formulário
     if (!empty($success_message)) {
@@ -97,13 +102,13 @@ function updateRodapeSection($email, $telefone) {
     $html_content = file_get_contents($file_path);
     
     // Atualizar o email
-    $pattern_email = '/<a href="mailto:[^"]*" class="text-white hover:text-primary transition-colors">\s*.*?\s*<\/a>/s';
-    $replacement_email = '<a href="mailto:' . $email . '" class="text-white hover:text-primary transition-colors">' . $email . '</a>';
+    $pattern_email = '/<a href="mailto:[^"]*" class="font-normal text-white text-sm sm:text-base text-center mb-2 sm:mb-3 hover:text-\[#cdff3c\] transition-colors duration-300">\s*.*?\s*<\/a>/s';
+    $replacement_email = '<a href="mailto:' . $email . '" class="font-normal text-white text-sm sm:text-base text-center mb-2 sm:mb-3 hover:text-[#cdff3c] transition-colors duration-300">' . $email . '</a>';
     $html_content = preg_replace($pattern_email, $replacement_email, $html_content, 1);
     
     // Atualizar o telefone
-    $pattern_telefone = '/<a href="tel:[^"]*" class="text-white hover:text-primary transition-colors">\s*.*?\s*<\/a>/s';
-    $replacement_telefone = '<a href="tel:' . preg_replace('/[^0-9+]/', '', $telefone) . '" class="text-white hover:text-primary transition-colors">' . $telefone . '</a>';
+    $pattern_telefone = '/<a href="https:\/\/wa\.me\/[^"]*" class="font-normal text-white text-sm sm:text-base text-center mb-8 sm:mb-12 hover:text-\[#cdff3c\] transition-colors duration-300">\s*.*?\s*<\/a>/s';
+    $replacement_telefone = '<a href="https://wa.me/' . preg_replace('/[^0-9+]/', '', $telefone) . '" class="font-normal text-white text-sm sm:text-base text-center mb-8 sm:mb-12 hover:text-[#cdff3c] transition-colors duration-300">' . $telefone . '</a>';
     $html_content = preg_replace($pattern_telefone, $replacement_telefone, $html_content, 1);
     
     // Salvar as alterações no arquivo

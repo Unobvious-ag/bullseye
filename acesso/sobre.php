@@ -81,18 +81,36 @@ function updateSobreNosSection($coluna1, $coluna2) {
     $file_path = "../index.html";
     $html_content = file_get_contents($file_path);
     
-    // Atualizar a coluna 1
-    $pattern_coluna1 = '/<div class="w-full md:w-\[556px\] font-light text-white text-base sm:text-lg md:text-\[22px\] leading-relaxed animate-fade-in delay-100">\s*.*?\s*<\/div>/s';
-    $replacement_coluna1 = '<div class="w-full md:w-[556px] font-light text-white text-base sm:text-lg md:text-[22px] leading-relaxed animate-fade-in delay-100">' . $coluna1 . '</div>';
+    // Atualizar a coluna 1 - Pattern mais específico e robusto
+    $pattern_coluna1 = '/<div class="w-full md:w-\[556px\] font-light text-white text-base sm:text-lg md:text-\[22px\] leading-relaxed animate-fade-in delay-100">[\s\S]*?<\/div>/';
+    $replacement_coluna1 = '<div class="w-full md:w-[556px] font-light text-white text-base sm:text-lg md:text-[22px] leading-relaxed animate-fade-in delay-100">' . "\n                        " . $coluna1 . "\n                    </div>";
     $html_content = preg_replace($pattern_coluna1, $replacement_coluna1, $html_content, 1);
     
-    // Atualizar a coluna 2
-    $pattern_coluna2 = '/<div class="w-full md:w-\[526px\] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed animate-fade-in delay-300">\s*.*?\s*<\/div>/s';
-    $replacement_coluna2 = '<div class="w-full md:w-[526px] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed animate-fade-in delay-300">' . $coluna2 . '</div>';
+    // Processar a coluna 2 - Converter lista de itens em HTML formatado com bullets
+    $bullets = explode("\n", trim($coluna2));
+    $bullets_html = "\n";
+    
+    foreach ($bullets as $bullet) {
+        $bullet = trim($bullet);
+        if (!empty($bullet)) {
+            $bullets_html .= '                        <div class="flex items-start gap-2 mb-3 sm:mb-4 hover:translate-x-1 transition-transform duration-300">' . "\n";
+            $bullets_html .= '                            <img src="img/bullet.png" alt="Bullet" class="w-2 sm:w-3 h-2 sm:h-3">' . "\n";
+            $bullets_html .= '                            <p class="m-0">' . htmlspecialchars($bullet) . '</p>' . "\n";
+            $bullets_html .= '                        </div>' . "\n";
+        }
+    }
+    
+    // Atualizar a coluna 2 - Pattern mais específico que captura todo o conteúdo interno
+    $pattern_coluna2 = '/<div class="w-full md:w-\[526px\] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed animate-fade-in delay-300">[\s\S]*?<\/div>(?=\s*<\/div>\s*<\/section>)/';
+    $replacement_coluna2 = '<div class="w-full md:w-[526px] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed animate-fade-in delay-300">' . $bullets_html . '                    </div>';
     $html_content = preg_replace($pattern_coluna2, $replacement_coluna2, $html_content, 1);
     
     // Salvar as alterações no arquivo
-    file_put_contents($file_path, $html_content);
+    if (file_put_contents($file_path, $html_content) === false) {
+        error_log("Erro ao salvar o arquivo index.html");
+        return false;
+    }
+    return true;
 }
 ?>
 
@@ -191,10 +209,22 @@ function updateSobreNosSection($coluna1, $coluna2) {
                                     </div>
                                     <div class="mb-3">
                                         <label for="coluna2" class="form-label">Lista de Tópicos (Coluna 2)</label>
-                                        <textarea class="form-control <?php echo (!empty($coluna2_err)) ? 'is-invalid' : ''; ?>" id="coluna2" name="coluna2" rows="8"><?php echo $coluna2; ?></textarea>
+                                        <textarea class="form-control <?php echo (!empty($coluna2_err)) ? 'is-invalid' : ''; ?>" id="coluna2" name="coluna2" rows="8"><?php 
+                                            // Extrair apenas o texto dos bullets para exibir no textarea
+                                            if (strpos($coluna2, '<div class="flex') !== false) {
+                                                // Se o conteúdo contém HTML, extrair apenas o texto
+                                                preg_match_all('/<p class="m-0">(.*?)<\/p>/s', $coluna2, $matches);
+                                                if (!empty($matches[1])) {
+                                                    echo implode("\n", $matches[1]);
+                                                } else {
+                                                    echo $coluna2;
+                                                }
+                                            } else {
+                                                echo $coluna2;
+                                            }
+                                        ?></textarea>
                                         <div class="form-text">
-                                            Mantenha a estrutura HTML para os bullets. Exemplo:<br>
-                                            <code>&lt;div class="flex items-start gap-2 mb-3 sm:mb-4 hover:translate-x-1 transition-transform duration-300"&gt;&lt;img src="img/bullet.png" alt="Bullet" class="w-2 sm:w-3 h-2 sm:h-3"&gt;&lt;p class="m-0"&gt;Seu texto aqui&lt;/p&gt;&lt;/div&gt;</code>
+                                            Digite cada tópico em uma linha separada. O sistema adicionará automaticamente os bullets e a formatação necessária.
                                         </div>
                                         <span class="invalid-feedback"><?php echo $coluna2_err; ?></span>
                                     </div>
@@ -214,10 +244,11 @@ function updateSobreNosSection($coluna1, $coluna2) {
                                 <div class="alert alert-info">
                                     <h6><i class="bi bi-info-circle"></i> Dicas para edição:</h6>
                                     <ul>
-                                        <li>Para adicionar um novo tópico na lista, copie a estrutura de um tópico existente e altere apenas o texto.</li>
-                                        <li>Mantenha as classes CSS e estrutura HTML para preservar o estilo do site.</li>
+                                        <li>Para adicionar um novo tópico na lista, simplesmente adicione uma nova linha no campo "Lista de Tópicos".</li>
+                                        <li>Para remover um tópico, basta excluir a linha correspondente.</li>
+                                        <li>Para reordenar os tópicos, reorganize as linhas na ordem desejada.</li>
                                         <li>Use &lt;br&gt; para quebras de linha no texto principal.</li>
-                                        <li>Não remova as classes CSS ou atributos HTML, pois isso pode afetar o layout do site.</li>
+                                        <li>O sistema adicionará automaticamente os bullets e a formatação necessária para cada tópico.</li>
                                     </ul>
                                 </div>
                             </div>

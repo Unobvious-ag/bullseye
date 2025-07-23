@@ -42,9 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Tentar executar a instrução preparada
                 if ($stmt->execute()) {
                     $success_message = "Descrição da seção 'Como Fazemos' atualizada com sucesso!";
-                    
-                    // Atualizar o arquivo HTML
-                    updateComoFazemosDescription($descricao);
+                    $descricao_atualizada = $descricao; // Salvar para uso posterior
                 } else {
                     echo "Ops! Algo deu errado. Por favor, tente novamente mais tarde.";
                 }
@@ -71,9 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Tentar executar a instrução preparada
                 if ($stmt->execute()) {
                     $success_message = "Card atualizado com sucesso!";
-                    
-                    // Atualizar o arquivo HTML
-                    updateComoFazemosCards();
                 } else {
                     echo "Ops! Algo deu errado. Por favor, tente novamente mais tarde.";
                 }
@@ -86,6 +81,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Fechar conexão
     $mysqli->close();
+    
+    // Atualizar o arquivo HTML se houver sucesso
+    if (!empty($success_message)) {
+        // Atualizar a descrição principal se foi modificada
+        if (isset($descricao_atualizada)) {
+            updateComoFazemosDescription($descricao_atualizada);
+        }
+        // Atualizar os cards
+        updateComoFazemosCards();
+    }
     
     // Redirecionar para evitar reenvio do formulário
     if (!empty($success_message)) {
@@ -127,8 +132,8 @@ function updateComoFazemosDescription($descricao) {
     $html_content = file_get_contents($file_path);
     
     // Atualizar a descrição
-    $pattern = '/<p class="w-full md:w-\[652px\] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed md:ml-8">\s*.*?\s*<\/p>/s';
-    $replacement = '<p class="w-full md:w-[652px] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed md:ml-8">' . $descricao . '</p>';
+    $pattern = '/<div class="w-full md:w-\[556px\] font-light text-white text-base sm:text-lg md:text-\[22px\] leading-relaxed animate-fade-in delay-100">\s*.*?\s*<\/div>/s';
+    $replacement = '<div class="w-full md:w-[556px] font-light text-white text-base sm:text-lg md:text-[22px] leading-relaxed animate-fade-in delay-100">' . $descricao . '</div>';
     $html_content = preg_replace($pattern, $replacement, $html_content, 1);
     
     // Salvar as alterações no arquivo
@@ -140,14 +145,18 @@ function updateComoFazemosCards() {
     $file_path = "../index.html";
     $html_content = file_get_contents($file_path);
     
-    // Buscar todos os cards do banco de dados
-    global $mysqli;
-    $mysqli = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+    // Criar uma nova conexão para esta função
+    $mysqli_local = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+    
+    // Verificar conexão
+    if ($mysqli_local->connect_error) {
+        die("Falha na conexão: " . $mysqli_local->connect_error);
+    }
     
     $sql = "SELECT id, titulo, descricao, icone, ordem FROM como_fazemos_cards ORDER BY ordem ASC";
-    $result = $mysqli->query($sql);
+    $result = $mysqli_local->query($sql);
     
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         $cards_html = "";
         $delay = 100;
         
@@ -180,7 +189,8 @@ function updateComoFazemosCards() {
         file_put_contents($file_path, $html_content);
     }
     
-    $mysqli->close();
+    // Fechar a conexão local
+    $mysqli_local->close();
 }
 ?>
 

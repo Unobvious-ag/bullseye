@@ -83,7 +83,7 @@ function updateHeroSection($title, $subtitle) {
     
     // Atualizar o título
     $pattern_title = '/<h1 class="font-bold text-white text-4xl sm:text-5xl md:text-6xl lg:text-\[64px\] leading-tight tracking-tight">\s*.*?\s*<\/h1>/s';
-    $replacement_title = '<h1 class="font-bold text-white text-4xl sm:text-5xl md:text-6xl lg:text-[64px] leading-tight tracking-tight">' . $title . '</h1>';
+    $replacement_title = '<h1 class="font-bold text-white text-4xl sm:text-5xl md:text-6xl lg:text-[64px] leading-tight tracking-tight">' . $title . '<img src="img/flecha-verde.png" alt="" class="h-6 sm:h-8 md:h-10 inline-block ml-2 mb-2"></h1>';
     $html_content = preg_replace($pattern_title, $replacement_title, $html_content);
     
     // Atualizar o subtítulo
