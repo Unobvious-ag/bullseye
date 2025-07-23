@@ -1,0 +1,45 @@
+# Proteger o diretório contra listagem
+Options -Indexes
+
+# Definir o arquivo de índice padrão
+DirectoryIndex index.php
+
+# Proteger arquivos sensíveis
+<FilesMatch "^(config\.php|.*\.sql)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Redirecionar todas as requisições para HTTPS (descomente se o site tiver SSL)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Limitar métodos HTTP
+<LimitExcept GET POST>
+    Order Allow,Deny
+    Deny from all
+</LimitExcept>
+
+# Proteger contra ataques XSS e outros
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Desabilitar assinaturas de servidor
+ServerSignature Off
+
+# Proteger contra acesso direto a arquivos PHP (exceto index.php)
+<FilesMatch "\.(php)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Permitir acesso apenas ao index.php e arquivos específicos
+<Files ~ "^(?!index\.php|login\.php|logout\.php|hero\.php|sobre\.php|acreditamos\.php|como\.php|parceiros\.php|rodape\.php|styles\.css).*\.php$">
+    Order Allow,Deny
+    Deny from all
+</Files>
