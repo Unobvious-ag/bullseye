@@ -2,7 +2,7 @@
 /* Configurações do banco de dados */
 define('DB_SERVER', 'localhost');
 define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
+define('DB_PASSWORD', '3a4efbd354bcacc2259f69103a438f80fab2137807606a57');
 define('DB_NAME', 'bullseye_admin');
 
 /* Tentativa de conexão com o banco de dados MySQL */
