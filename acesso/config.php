@@ -31,6 +31,7 @@ function setup_database() {
     $mysqli->query($sql);
     
     // Verificar se já existe um usuário admin
+    /*
     $result = $mysqli->query("SELECT COUNT(*) as count FROM users WHERE username = 'admin'");
     $row = $result->fetch_assoc();
     
@@ -44,6 +45,7 @@ function setup_database() {
         $stmt->execute();
         $stmt->close();
     }
+    */
     
     // Criar tabela para conteúdo da Hero Section
     $sql = "CREATE TABLE IF NOT EXISTS hero_section (
