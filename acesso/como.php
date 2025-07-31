@@ -131,13 +131,17 @@ function updateComoFazemosDescription($descricao) {
     $file_path = "../index.html";
     $html_content = file_get_contents($file_path);
     
-    // Atualizar a descrição
-    $pattern = '/<div class="w-full md:w-\[556px\] font-light text-white text-base sm:text-lg md:text-\[22px\] leading-relaxed animate-fade-in delay-100">\s*.*?\s*<\/div>/s';
-    $replacement = '<div class="w-full md:w-[556px] font-light text-white text-base sm:text-lg md:text-[22px] leading-relaxed animate-fade-in delay-100">' . $descricao . '</div>';
+    // Atualizar a descrição - Pattern correto para a seção Como Fazemos
+    $pattern = '/<p class="w-full md:w-\[652px\] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed md:ml-8">[\s\S]*?<\/p>/';
+    $replacement = '<p class="w-full md:w-[652px] font-normal text-white text-xs sm:text-sm md:text-base leading-relaxed md:ml-8">' . "\n                        " . $descricao . "\n                    </p>";
     $html_content = preg_replace($pattern, $replacement, $html_content, 1);
     
     // Salvar as alterações no arquivo
-    file_put_contents($file_path, $html_content);
+    if (file_put_contents($file_path, $html_content) === false) {
+        error_log("Erro ao salvar o arquivo index.html");
+        return false;
+    }
+    return true;
 }
 
 // Função para atualizar os cards da seção Como Fazemos no arquivo HTML
