@@ -65,3 +65,4 @@ O site foi projetado para funcionar bem em dispositivos de todos os tamanhos, de
 Desenvolvido para a Bullseye Trade.
 
 # Teste de webhook em 04/08 - novo
+# Teste de webhook em 04/08 - PEDOTTI
